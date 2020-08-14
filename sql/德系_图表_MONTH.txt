@@ -1,0 +1,51 @@
+with t1 as(
+select t.market_type_name,t.market_type_ename,m.year,m.year||lpad(m.month,2,0) ym,m.popularity_index
+from fdm_ema_market_month m
+left join dm_ema_market_type t on t.market_type_id=m.market_type_id
+where t.level_flag=3
+and t.market_type_pid=1
+and m.location_id='-1'
+and t.MARKET_TYPE_ENAME='GERMAN' 
+and m.year between (select max(year) from fdm_ema_market_month)-1 and (select max(year) from fdm_ema_market_month)
+)
+,t2 as(
+select 1 sn,'YEAR' YEAR, 'JAN' JAN, 'FEB' FEB, 'MAR' MAR, 'APR' APR
+,'MAY' MAY, 'JUN' JUN, 'JUL' JUL, 'AUG' AUG, 'SEP' SEP, 'OCT' OCT, 'NOV' NOV, 'DEC' DEC from dual
+union
+select 2 sn,to_char(t1.year)
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'01',t1.popularity_index))) 
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'02',t1.popularity_index))) 
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'03',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'04',t1.popularity_index))) 
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'05',t1.popularity_index))) 
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'06',t1.popularity_index))) 
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'07',t1.popularity_index))) 
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'08',t1.popularity_index))) 
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'09',t1.popularity_index))) 
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'10',t1.popularity_index))) 
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'11',t1.popularity_index))) 
+,to_char(sum(decode(t1.ym,(select min(year) from t1)||'12',t1.popularity_index))) 
+from t1
+where t1.year=(select min(year) from t1)
+group by t1.year
+union
+select 3 sn,to_char(t1.year)
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'01',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'02',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'03',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'04',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'05',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'06',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'07',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'08',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'09',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'10',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'11',t1.popularity_index)))
+,to_char(sum(decode(t1.ym,(select max(year) from t1)||'12',t1.popularity_index)))
+from t1
+where t1.year=(select max(year) from t1)
+group by t1.year
+)
+select year,JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC 
+from t2 
+order by t2.sn

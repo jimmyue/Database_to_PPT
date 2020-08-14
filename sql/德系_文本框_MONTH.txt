@@ -1,0 +1,12 @@
+select 'WoW:',to_char(100*w.wow,'fm9999990.0')||'%'
+,'YoY(W):',to_char(100*w.yoy,'fm9999990.0')||'%'
+,'MoM:',to_char(100*w.mom,'fm9999990.0')||'%'
+,'YoY(M):','-2.3%'
+from fdm_ema_market_week w
+left join dm_ema_market_type t on t.market_type_id=w.market_type_id
+where t.level_flag=3   
+and t.market_type_pid=1
+and w.location_id='-1' 
+and t.MARKET_TYPE_ENAME='GERMAN' 
+and w.year||lpad(w.month,2,0)||w.week=(select max(year||lpad(month,2,0)||week) from fdm_ema_market_week)
+order by year||lpad(month,2,0)||w.week desc
